@@ -498,3 +498,94 @@ tbody tr {
 tbody tr:hover td {
     background-color: rgba(41, 128, 185, 0.1) !important; /* Fundo levemente azul ao passar o mouse */
 }
+
+/* ==========================================
+   AJUSTES PARA CELULAR (RESPONSIVIDADE)
+   ========================================== */
+@media (max-width: 768px) {
+    
+    /* 1. Cabeçalho centralizado */
+    header {
+        flex-direction: column !important;
+        gap: 10px;
+        text-align: center;
+        padding: 12px !important;
+    }
+
+    header h1 {
+        font-size: 20px;
+    }
+
+    /* 2. Container principal: empilha Chat e Tabela na vertical */
+    .container {
+        flex-direction: column !important;
+        padding: 10px !important;
+        gap: 20px !important;
+    }
+
+    .painel-esquerdo, 
+    .painel-direito {
+        width: 100% !important;
+    }
+
+    /* 3. Ajuste do Chat */
+    .area-mensagens {
+        height: 320px !important; /* Altura confortável para ler no celular */
+    }
+
+    .area-digitar {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .area-digitar input,
+    .area-digitar button {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* 4. Ajuste das Tabelas (evita estourar a tela pro lado) */
+    .conteudo-tabela {
+        overflow-x: auto; /* Se a tabela for larga, ela ganha rolagem suave horizontal */
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 8px 5px !important;
+    }
+
+    /* Botões de Ação do Admin pequenos e organizados */
+    td button {
+        padding: 5px 6px !important;
+        font-size: 11px !important;
+        margin: 2px !important;
+    }
+
+    /* Form de adicionar jogador no celular */
+    #form-add-jogador {
+        flex-direction: column;
+    }
+
+    #form-add-jogador input,
+    #form-add-jogador button {
+        width: 100% !important;
+    }
+
+    /* 5. Modais (Login e Regras) cabendo em qualquer tela */
+    .modal-card,
+    #modal-regras > div {
+        width: 90% !important;
+        max-width: 90% !important;
+        padding: 20px 15px !important;
+        max-height: 85vh;
+        overflow-y: auto; /* Rolagem caso o celular seja muito pequeno */
+    }
+
+    /* A nossa Pantera ajustada para o celular */
+    #modal-regras img {
+        width: 110px !important; /* Ajuste suave para não ocupar a tela toda do celular */
+    }
+}
