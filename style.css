@@ -1,0 +1,500 @@
+/* Importando fontes */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Courier+Prime&display=swap');
+
+/* Paleta de Cores e Variáveis */
+:root {
+    --bg-color: #181816;
+    --box-bg: #1f1f1d;
+    --text-main: #ded8c4;
+    --text-muted: #888577;
+    --green-btn: #3b8555;
+    --yellow-accent: #d6aa1b;
+    --orange-accent: #c75432;
+    --font-text: 'Courier Prime', 'Courier New', monospace;
+    --font-header: 'Oswald', Impact, sans-serif;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-text);
+}
+
+/* ==========================================
+   CORREÇÃO DA ESTRUTURA (Evita cortar a tela)
+   ========================================== */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    background-image: radial-gradient(#2a2a27 1px, transparent 1px);
+    background-size: 10px 10px;
+    height: 100vh; 
+    overflow: hidden; 
+    display: flex;           /* NOVO: Organiza a tela inteira */
+    flex-direction: column;  /* NOVO: De cima para baixo */
+}
+
+/* Títulos Fortes */
+h1, h2, h3, h4, h5 {
+    font-family: var(--font-header);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-main);
+}
+
+/* ==========================================
+   CONTAINER (Ocupa o que sobra abaixo do header)
+   ========================================== */
+.container {
+    display: flex;
+    flex: 1;                 /* NOVO: Pega o resto da tela */
+    overflow: hidden;        /* NOVO: Trava os elementos aqui dentro */
+}
+
+/* ==========================================
+   CHAT - PAINEL ESQUERDO (40%)
+   ========================================== */
+.painel-esquerdo {
+    width: 40%;
+    background-color: transparent;
+    border-right: 2px solid var(--orange-accent);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cabecalho-chat {
+    padding: 20px;
+    background-color: var(--box-bg);
+    border-bottom: 2px dashed var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.area-mensagens {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto; 
+    background-color: transparent;
+    min-height: 0; /* NOVO: Essencial para não empurrar a caixa de texto */
+    
+    /* Scrollbar */
+    scrollbar-width: thin; 
+    scrollbar-color: var(--yellow-accent) var(--bg-color);
+}
+
+.area-mensagens::-webkit-scrollbar { width: 6px; }
+.area-mensagens::-webkit-scrollbar-track { background: var(--bg-color); }
+.area-mensagens::-webkit-scrollbar-thumb { background-color: var(--yellow-accent); border-radius: 10px; }
+
+/* Correção: Força as mensagens a ficarem escuras */
+.area-mensagens > div {
+    background-color: var(--box-bg) !important;
+    border-left: 3px solid var(--yellow-accent) !important;
+    border-radius: 0 4px 4px 0 !important;
+    padding: 12px !important;
+    margin-bottom: 10px !important;
+    color: var(--text-main) !important;
+    border-top: 1px solid #333 !important;
+    border-right: 1px solid #333 !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+/* Caixa de Digitar - Fixa no fundo */
+.area-digitar {
+    display: flex;
+    padding: 15px;
+    background-color: var(--box-bg);
+    border-top: 2px dashed var(--text-muted);
+    flex-shrink: 0; /* NOVO: Impede essa caixa de ser esmagada sumir */
+}
+
+.area-digitar input {
+    flex-grow: 1;
+    padding: 10px;
+    background-color: #111;
+    color: var(--text-main);
+    border: 1px solid var(--text-muted);
+    border-radius: 4px;
+}
+
+.area-digitar input:focus {
+    outline: none;
+    border-color: var(--yellow-accent);
+}
+
+.area-digitar button {
+    margin-left: 10px;
+    padding: 10px 20px;
+}
+
+/* ==========================================
+   TABELAS - PAINEL DIREITO (60%)
+   ========================================== */
+.painel-direito {
+    width: 60%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; 
+}
+
+.menu-tabelas {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.aba {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: var(--box-bg);
+    color: var(--text-muted);
+    border: 1px solid var(--text-muted);
+    font-family: var(--font-header);
+    text-transform: uppercase;
+    border-radius: 4px 4px 0 0;
+}
+
+.aba.ativa {
+    background-color: var(--bg-color);
+    color: var(--yellow-accent);
+    border: 2px solid var(--yellow-accent);
+    border-bottom: 2px solid var(--bg-color);
+}
+
+#form-add-jogador {
+    background-color: var(--box-bg);
+    border: 1px solid var(--text-muted);
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/* ==========================================
+   CORREÇÃO: LIMITANDO O TAMANHO DA TABELA
+   ========================================== */
+.conteudo-tabela {
+    border: 2px solid var(--orange-accent);
+    background-color: var(--box-bg);
+    padding: 20px;
+    border-radius: 4px;
+    
+    /* Trava a altura máxima e cria rolagem interna */
+    max-height: calc(100vh - 250px); 
+    overflow-y: auto;
+    
+    /* Scrollbar estilizada para a tabela */
+    scrollbar-width: thin; 
+    scrollbar-color: var(--orange-accent) var(--box-bg);
+}
+
+/* Barra de rolagem para navegadores baseados no Chrome/Edge */
+.conteudo-tabela::-webkit-scrollbar { 
+    width: 6px; 
+}
+.conteudo-tabela::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+.conteudo-tabela::-webkit-scrollbar-thumb { 
+    background-color: var(--orange-accent); 
+    border-radius: 10px; 
+}
+
+/* Faz o cabeçalho da tabela ficar fixo no topo ao rolar */
+th {
+    font-family: var(--font-header);
+    border-bottom: 2px dashed var(--text-muted);
+    color: var(--yellow-accent);
+    padding: 12px;
+    text-align: left;
+    position: sticky;
+    top: -20px; /* Ajuste por causa do padding da div */
+    background-color: var(--box-bg); /* Fundo sólido para não misturar com os nomes */
+    z-index: 10;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: transparent;
+}
+
+th {
+    font-family: var(--font-header);
+    border-bottom: 2px dashed var(--text-muted);
+    color: var(--yellow-accent);
+    padding: 12px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px dashed #333;
+    color: var(--text-main);
+}
+
+/* ==========================================
+   BOTÕES GERAIS E AÇÕES
+   ========================================== */
+button {
+    background-color: var(--green-btn);
+    color: white;
+    font-family: var(--font-header);
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover { 
+    background-color: #2e6a43; 
+    transform: translateY(-2px); 
+}
+
+button:active { 
+    transform: translateY(0); 
+}
+
+td button {
+    background-color: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+    font-family: var(--font-text);
+    padding: 4px 8px;
+    margin-right: 4px;
+}
+td button:hover {
+    background-color: var(--yellow-accent);
+    color: var(--bg-color);
+    border-color: var(--yellow-accent);
+}
+
+/* ==========================================
+   MODAIS (LOGIN E REGRAS) NO TEMA ESCURO
+   ========================================== */
+.modal-overlay {
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    z-index: 9999;
+}
+
+.modal-card, #modal-regras > div {
+    background: var(--bg-color);
+    border: 3px solid var(--yellow-accent);
+    padding: 30px;
+    border-radius: 4px;
+    width: 90%;
+    max-width: 400px;
+    color: var(--text-main);
+    text-align: center; /* Centraliza o texto do modal */
+}
+
+.modal-card p { margin-bottom: 15px; color: var(--text-muted); }
+
+.modal-card h2, #modal-regras h3 {
+    color: var(--yellow-accent);
+    border-bottom: 2px dashed var(--text-muted);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* ------------------------------------------
+   CORREÇÃO: Botão do Google e Logo
+   ------------------------------------------ */
+.btn-google {
+    background-color: #fff !important; /* Fundo branco pra destacar a logo colorida */
+    color: #333 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+    padding: 10px !important;
+    margin-bottom: 5px !important;
+    border: 2px solid var(--text-muted) !important;
+}
+
+/* Trava o tamanho da imagem do Google */
+.btn-google img {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+/* ------------------------------------------
+   CORREÇÃO: Divisor "ou use seu usuário"
+   ------------------------------------------ */
+.divisor {
+    margin: 20px 0;
+    position: relative;
+    text-align: center;
+}
+
+.divisor span {
+    background-color: var(--bg-color); /* Mesma cor do fundo do modal pra "cortar" a linha */
+    padding: 0 10px;
+    color: var(--text-muted);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.divisor::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    border-bottom: 1px dashed var(--text-muted);
+    z-index: 0;
+}
+
+/* ------------------------------------------
+   Formulário Tradicional
+   ------------------------------------------ */
+#form-auth input {
+    width: 100%;
+    padding: 10px;
+    background: #111;
+    color: var(--yellow-accent);
+    border: 1px solid var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.botoes-auth { display: flex; gap: 10px; }
+
+.btn-primary { 
+    flex: 1; padding: 10px; background: var(--green-btn); 
+}
+
+.btn-secondary { 
+    flex: 1; padding: 10px; background: transparent; color: var(--text-main); border: 2px solid var(--text-muted); 
+}
+.btn-secondary:hover { 
+    border-color: var(--yellow-accent); 
+}
+
+.mensagem-erro { color: #e74c3c; font-size: 12px; margin-top: 10px; }
+
+/* ==========================================
+   NOVA PALETA E EFEITOS (AZUL, CIANO E NEON)
+   ========================================== */
+:root {
+    /* Adicionando as novas cores à sua paleta */
+    --blue-accent: #2980b9;
+    --cyan-accent: #00e5ff;
+}
+
+/* ==========================================
+   ANIMAÇÕES (KEYFRAMES)
+   ========================================== */
+/* Deslizamento suave de baixo para cima (para mensagens) */
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Efeito de "pulo" suave (para modais) */
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* ==========================================
+   APLICANDO ANIMAÇÕES E NOVAS CORES
+   ========================================== */
+
+/* 1. Modais mais suaves */
+.modal-overlay {
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 2. Mensagens do chat aparecendo com estilo */
+/* Mensagens do chat (SEM animação global) */
+.area-mensagens > div {
+    border-left: 3px solid var(--blue-accent) !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Animação exclusiva que será chamada via JS */
+.mensagem-nova {
+    animation: slideUpFade 0.4s ease-out forwards;
+}
+
+/* Efeito ao passar o mouse nas mensagens */
+.area-mensagens > div:hover {
+    transform: translateX(5px);
+    box-shadow: -2px 2px 8px rgba(41, 128, 185, 0.3);
+}
+
+/* 3. Botões mais dinâmicos (Glow effect) */
+button {
+    transition: all 0.3s ease !important;
+}
+
+button:hover {
+    background-color: var(--blue-accent) !important;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.5) !important; /* Brilho Ciano */
+    border-color: var(--cyan-accent) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Botões da Tabela (+1, -1, Excluir) */
+td button:hover {
+    background-color: var(--cyan-accent) !important;
+    color: var(--bg-color) !important;
+    border-color: var(--cyan-accent) !important;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.6) !important;
+}
+
+/* 4. Caixa de digitar com foco em Ciano */
+.area-digitar input {
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.area-digitar input:focus {
+    border-color: var(--cyan-accent) !important;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+}
+
+/* 5. Abas (Tabs) modernizadas */
+.aba {
+    transition: all 0.3s ease !important;
+}
+
+.aba:hover {
+    color: var(--cyan-accent) !important;
+}
+
+.aba.ativa {
+    color: var(--cyan-accent) !important;
+    border-color: var(--cyan-accent) !important;
+    border-bottom-color: var(--bg-color) !important;
+    text-shadow: 0 0 5px rgba(0, 229, 255, 0.4);
+}
+
+/* 6. Tabela com hover nas linhas */
+.conteudo-tabela {
+    border-color: var(--blue-accent) !important;
+    box-shadow: 0 0 15px rgba(41, 128, 185, 0.1);
+    transition: border-color 0.4s;
+}
+
+.conteudo-tabela:hover {
+    border-color: var(--cyan-accent) !important;
+}
+
+tbody tr {
+    transition: background-color 0.2s;
+}
+
+tbody tr:hover td {
+    background-color: rgba(41, 128, 185, 0.1) !important; /* Fundo levemente azul ao passar o mouse */
+}

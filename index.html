@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Campeonato</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- CABEÇALHO COM BOTÃO DE SAIR -->
+    <header
+        style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: #2c3e50; color: white;">
+        <h1>Tabela do 38zero</h1>
+        <div>
+            <span id="btn-login" style="margin-right: 15px; font-weight: bold;">Faça Login</span>
+            <button id="btn-logout"
+                style="display: none; background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sair</button>
+        </div>
+    </header>
+
+    <!-- MODAL DE LOGIN -->
+    <div id="modal-login" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Bem-vindo! 👋</h2>
+            <p>Escolha como deseja acessar:</p>
+
+            <button id="btn-login-google" class="btn-google">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Entrar com Google
+            </button>
+
+            <div class="divisor"><span>ou use seu Usuário</span></div>
+
+            <form id="form-auth">
+                <input type="text" id="auth-usuario" placeholder="Nome de Usuário (Ex: joaogamer)" required>
+                <input type="password" id="auth-senha" placeholder="Sua senha" required>
+
+                <div class="botoes-auth">
+                    <button type="button" id="btn-entrar-email" class="btn-primary">Entrar</button>
+                    <button type="button" id="btn-cadastrar-email" class="btn-secondary">Criar Conta</button>
+                </div>
+            </form>
+
+            <p id="auth-erro" class="mensagem-erro"></p>
+        </div>
+    </div>
+
+    <!-- ESTRUTURA PRINCIPAL -->
+    <div class="container">
+
+        <!-- LADO ESQUERDO: CHAT -->
+        <div class="painel-esquerdo">
+            <div class="cabecalho-chat">
+                <h2>Resenha</h2>
+                <button id="btn-regras">📜 Regras</button>
+            </div>
+
+            <div class="area-mensagens" id="area-mensagens">
+                <p><em>Bem-vindo ao chat! Faça login para enviar mensagens.</em></p>
+            </div>
+
+            <div class="area-digitar">
+                <input type="text" id="input-mensagem" placeholder="Digite sua mensagem ou link...">
+                <button id="btn-enviar">Enviar</button>
+            </div>
+        </div>
+
+        <!-- LADO DIREITO: TABELAS -->
+        <div class="painel-direito">
+
+            <div class="abas menu-tabelas">
+                <button class="aba ativa">Copa do Mundo</button>
+                <button class="aba">Brasileirão</button>
+            </div>
+
+            <div class="conteudo-tabela">
+                <h2>Ranking - Copa do Mundo</h2>
+
+                <table>
+                    <thead id="cabecalho-tabela"></thead>
+                    <tbody id="corpo-tabela"></tbody>
+                </table>
+
+                <div id="form-add-jogador" style="margin-top: 15px; padding: 10px; display: none; gap: 10px;">
+                    <input list="lista-usuarios" id="novo-jogador-nome" placeholder="Digite ou escolha um jogador..."
+                        style="flex: 2; padding: 6px;">
+                    <datalist id="lista-usuarios"></datalist>
+                    <button id="btn-add-jogador">+ Adicionar nesta Tabela</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- POP-UP DE REGRAS -->
+    <!-- POP-UP DE REGRAS COM CRÉDITOS -->
+    <!-- POP-UP DE REGRAS COM CRÉDITOS -->
+    <!-- POP-UP DE REGRAS COM CRÉDITOS -->
+    <!-- POP-UP DE REGRAS COM CRÉDITOS -->
+    <div id="modal-regras" class="modal-overlay" style="display: none;">
+        <div>
+            <h3>📜 Regras do Campeonato</h3>
+            <ul style="padding-left: 20px; line-height: 1.6; font-size: 15px; text-align: left;">
+                <li>Mínimo de 6 jogadores na partida para contabilizar o título (sujeito a mudanças).</li>
+                <li>Print da tela do campeão.</li>
+                <li>Caso o campeonato for abandonado (por conta do horário), não contará na tabela.</li>
+                <li>Brasileirão = 2 Copas do Mundo.</li>
+                <li>Rebaixamento = 1 jogo sem jogar.</li>
+            </ul>
+
+            <!-- ÁREA DE CRÉDITOS (EMBAIXO DO OUTRO + PANTERA GIGANTE) -->
+            <div
+                style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;">
+                <div style="text-align: center;">
+                    <span
+                        style="display: block; font-weight: bold; color: var(--cyan-accent, #00e5ff); font-size: 20px; letter-spacing: 0.5px;">Créditos</span>
+                    <span
+                        style="display: block; font-weight: bold; color: #ffffff; font-size: 18px; margin-top: 2px;">Vitor
+                        Wilkes</span>
+                </div>
+                <img src="pantera.jfif" alt="Pantera"
+                    style="width: 150px; height: auto; border-radius: 10px; border: 2px solid var(--blue-accent, #2980b9); box-shadow: 0 0 18px rgba(0, 229, 255, 0.6);">
+            </div>
+
+            <button id="btn-fechar-regras"
+                style="background: #e74c3c; width: 100%; margin-top: 15px; padding: 10px;">Entendido, fechar</button>
+        </div>
+    </div>
+
+    <script src="app.js" type="module"></script>
+</body>
+
+</html>
