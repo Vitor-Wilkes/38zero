@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
+    <title>Nosso Campeonato</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -51,10 +51,25 @@
     <div class="container">
 
         <!-- LADO ESQUERDO: CHAT -->
+        <!-- LADO ESQUERDO: CHAT -->
         <div class="painel-esquerdo">
             <div class="cabecalho-chat">
                 <h2>Resenha👀</h2>
-                <button id="btn-regras">📜 Regras</button>
+                <div style="display: flex; gap: 5px;">
+                    <button id="btn-regras">📜 Regras</button>
+                    <button id="btn-abrir-form-enquete" style="display: none; background: var(--blue-accent);">📊
+                        Enquete (ADM)</button>
+                </div>
+            </div>
+
+            <!-- ÁREA DA ENQUETE: É AQUI QUE A MÁGICA ACONTECE -->
+            <div id="area-enquete" class="votacao-fixada" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 id="enquete-pergunta" style="color: var(--cyan-accent); font-size: 16px;">📊 Pergunta</h3>
+                    <button id="btn-encerrar-enquete"
+                        style="display: none; background: #e74c3c; padding: 5px 10px; font-size: 12px;">Encerrar</button>
+                </div>
+                <div id="enquete-opcoes"></div>
             </div>
 
             <div class="area-mensagens" id="area-mensagens">
@@ -127,6 +142,95 @@
 
             <button id="btn-fechar-regras"
                 style="background: #e74c3c; width: 100%; margin-top: 15px; padding: 10px;">Entendido, fechar</button>
+        </div>
+    </div>
+    <!-- BIBLIOTECA DE CONFETES -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- BOTÃO DO ADMIN: CRIAR ANÚNCIO (Fica oculto por padrão) -->
+    <div style="text-align: center; padding: 10px;">
+        <button id="btn-abrir-form-anuncio"
+            style="display: none; background: var(--blue-accent); width: 100%; max-width: 400px; margin: 0 auto;">
+            📣 Criar Anúncio Global (ADM)
+        </button>
+    </div>
+
+    <!-- MODAL DO ADMIN: FORMULÁRIO DE CRIAÇÃO -->
+    <div id="modal-criar-anuncio" class="modal-overlay" style="display: none; z-index: 99999;">
+        <div class="modal-card">
+            <h3 style="color: var(--cyan-accent); margin-bottom: 15px;">Criar Anúncio Global</h3>
+
+            <select id="anuncio-tipo"
+                style="width: 100%; padding: 10px; margin-bottom: 10px; background: #111; color: #fff; border: 1px solid var(--text-muted);">
+                <option value="campeao">🏆 Campeão (Confetes)</option>
+                <option value="vice">🥈 Vice (Exige Link da Imagem/GIF)</option>
+                <option value="rebaixado">📉 Rebaixado (Exige Link da Imagem/GIF)</option>
+            </select>
+
+            <input type="text" id="anuncio-nome" placeholder="Nome do Jogador / Horário"
+                style="width: 100%; padding: 10px; margin-bottom: 10px; background: #111; color: #fff; border: 1px solid var(--text-muted);">
+            <input type="text" id="anuncio-msg" placeholder="Mensagem (Ex: Alisa meu pelo!)"
+                style="width: 100%; padding: 10px; margin-bottom: 10px; background: #111; color: #fff; border: 1px solid var(--text-muted);">
+            <input type="text" id="anuncio-img" placeholder="Link da Imagem/GIF (Deixe vazio p/ Campeão)"
+                style="width: 100%; padding: 10px; margin-bottom: 15px; background: #111; color: #fff; border: 1px solid var(--text-muted);">
+
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-enviar-anuncio" style="flex: 1; background: var(--green-btn);">Disparar</button>
+                <button onclick="document.getElementById('modal-criar-anuncio').style.display='none'"
+                    style="flex: 1; background: #e74c3c;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GLOBAL: O POP-UP QUE PULA NA TELA DE TODOS -->
+    <div id="popup-anuncio" class="modal-overlay" style="display: none; z-index: 999999;">
+        <div class="modal-card" style="border-color: var(--cyan-accent); text-align: center; max-width: 450px;">
+            <h2 id="popup-titulo" style="font-size: 28px; margin-bottom: 10px;">🏆 TÍTULO</h2>
+            <img id="popup-img" src="" alt="Anúncio"
+                style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; display: none; margin-bottom: 15px; border: 2px solid var(--blue-accent);">
+            <h3 id="popup-nome" style="color: #fff; font-size: 22px;">Nome do Jogador</h3>
+            <p id="popup-msg" style="color: var(--cyan-accent); font-size: 16px; margin-top: 10px; font-weight: bold;">
+                Mensagem aqui</p>
+            <button onclick="document.getElementById('popup-anuncio').style.display='none'"
+                style="width: 100%; margin-top: 20px; background: transparent; border: 2px solid var(--text-muted); color: var(--text-main);">Fechar
+                e voltar pro site</button>
+        </div>
+    </div>
+
+    <!-- MODAL DO ADMIN: CRIAR ENQUETE -->
+    <!-- MODAL DE CRIAR ENQUETE (NOVO COM TEMPO E OPÇÕES) -->
+    <div id="modal-criar-enquete" class="modal-overlay" style="display: none; z-index: 99999;">
+        <div class="modal-card">
+            <h3 style="color: var(--cyan-accent); margin-bottom: 15px;">📊 Criar Nova Enquete</h3>
+
+            <input type="text" id="nova-enquete-pergunta" placeholder="Ex: Quem amassa hoje?"
+                style="width: 100%; padding: 10px; margin-bottom: 10px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <label style="color: var(--text-main); font-size: 14px;">Duração (minutos):</label>
+                <input type="number" id="nova-enquete-tempo" value="5" min="1" max="60"
+                    style="width: 70px; padding: 5px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px; text-align: center;">
+            </div>
+
+            <div id="container-opcoes-enquete" style="margin-bottom: 10px; max-height: 150px; overflow-y: auto;">
+                <input type="text" class="input-opcao-enquete" placeholder="Opção 1"
+                    style="width: 100%; padding: 10px; margin-bottom: 5px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px;">
+                <input type="text" class="input-opcao-enquete" placeholder="Opção 2"
+                    style="width: 100%; padding: 10px; margin-bottom: 5px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px;">
+            </div>
+
+            <button id="btn-add-opcao-enquete"
+                style="width: 100%; background: transparent; border: 1px dashed var(--yellow-accent); color: var(--yellow-accent); margin-bottom: 15px; padding: 8px; border-radius: 5px; cursor: pointer; transition: 0.3s;">
+                + Adicionar Opção
+            </button>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-disparar-enquete"
+                    style="flex: 1; background: var(--green-btn); padding: 10px; border-radius: 5px; color: #000; font-weight: bold; cursor: pointer;">Iniciar
+                    Votação</button>
+                <button onclick="document.getElementById('modal-criar-enquete').style.display='none'"
+                    style="flex: 1; background: #e74c3c; padding: 10px; border-radius: 5px; color: #fff; font-weight: bold; cursor: pointer;">Cancelar</button>
+            </div>
         </div>
     </div>
 
