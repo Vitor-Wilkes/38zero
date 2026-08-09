@@ -10,17 +10,17 @@ import {
     createUserWithEmailAndPassword,
     updateProfile
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    serverTimestamp, 
-    query, 
-    orderBy, 
-    onSnapshot, 
-    where, 
-    doc, 
-    setDoc, 
+import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    query,
+    orderBy,
+    onSnapshot,
+    where,
+    doc,
+    setDoc,
     getDocs,
     limitToLast,
     deleteDoc,
@@ -296,7 +296,7 @@ function ehAdmin(user) {
 // SISTEMA DE TABELAS EM TEMPO REAL (SEM PERDER DADOS)
 // ==========================================
 let abaAtual = 'Copa do Mundo';
-let unsubscribeTabela = null; 
+let unsubscribeTabela = null;
 
 const botoesAbas = document.querySelectorAll('.aba');
 const tituloTabela = document.querySelector('.conteudo-tabela h2');
@@ -305,7 +305,7 @@ const corpoTabela = document.querySelector('#corpo-tabela');
 const formAddJogador = document.getElementById('form-add-jogador');
 
 botoesAbas.forEach(botao => {
-    botao.addEventListener('click', function() {
+    botao.addEventListener('click', function () {
         botoesAbas.forEach(b => b.classList.remove('ativa'));
         this.classList.add('ativa');
         abaAtual = this.innerText.trim();
@@ -317,7 +317,7 @@ botoesAbas.forEach(botao => {
 async function carregarDropdownUsuarios() {
     const datalist = document.getElementById('lista-usuarios');
     if (!datalist) return;
-    
+
     try {
         const snapshot = await getDocs(collection(db, "usuarios"));
         datalist.innerHTML = '';
@@ -332,10 +332,21 @@ async function carregarDropdownUsuarios() {
 function carregarTabela(categoria) {
     const souAdmin = ehAdmin(usuarioLogado);
 
+    // Mostrar ou esconder botão de criar enquete
+    const btnAbrirFormEnquete = document.getElementById('btn-abrir-form-enquete');
+    if (btnAbrirFormEnquete) btnAbrirFormEnquete.style.display = souAdmin ? 'block' : 'none';
+
     if (formAddJogador) {
         formAddJogador.style.display = souAdmin ? 'flex' : 'none';
         if (souAdmin) carregarDropdownUsuarios();
     }
+
+    // LINHAS NOVAS AQUI: Mostra ou esconde o botão de Anúncios
+    const btnAbrirFormAnuncio = document.getElementById('btn-abrir-form-anuncio');
+    if (btnAbrirFormAnuncio) {
+        btnAbrirFormAnuncio.style.display = souAdmin ? 'block' : 'none';
+    }
+    // ...
 
     const nomeColecao = getNomeColecao(categoria);
 
@@ -363,6 +374,7 @@ function carregarTabela(categoria) {
         }
 
         // Converte para lista e ordena via JavaScript (Sem falhas no Firebase)
+        // Converte para lista e ordena via JavaScript (Sem falhas no Firebase)
         const listaJogadores = [];
         snapshot.forEach((docSnap) => {
             listaJogadores.push({
@@ -371,9 +383,37 @@ function carregarTabela(categoria) {
             });
         });
 
-        // Ordenação decrescente por Títulos
-        listaJogadores.sort((a, b) => (Number(b.titulos) || 0) - (Number(a.titulos) || 0));
+        // NOVA ORDENAÇÃO CORRIGIDA
+        listaJogadores.sort((a, b) => {
+            // Garantindo que os valores sejam lidos como números pelo JavaScript
+            const titulosA = Number(a.titulos) || 0;
+            const titulosB = Number(b.titulos) || 0;
+            const vicesA = Number(a.vices) || 0;
+            const vicesB = Number(b.vices) || 0;
+            const rebA = Number(a.rebaixamentos) || 0;
+            const rebB = Number(b.rebaixamentos) || 0;
 
+            // 1º Critério GERAL: Quem tem MAIS títulos (Campeão) fica em cima
+            if (titulosB !== titulosA) {
+                return titulosB - titulosA;
+            }
+
+            // 2º Critério de DESEMPATE: Depende da tabela que está aberta
+            if (nomeColecao === 'copa_do_mundo') {
+                // Na Copa do Mundo: Quem tem MAIS vices ganha o desempate
+                if (vicesB !== vicesA) {
+                    return vicesB - vicesA;
+                }
+            } else {
+                // No Brasileirão: Quem tem MENOS rebaixamentos ganha o desempate
+                if (rebA !== rebB) {
+                    return rebA - rebB;
+                }
+            }
+
+            // 3º Critério FINAL: Ordem alfabética se empatarem em tudo
+            return (a.nome || "").localeCompare(b.nome || "");
+        });
         listaJogadores.forEach((jogador) => {
             const idDoc = jogador.id;
             const titulos = Number(jogador.titulos) || 0;
@@ -454,8 +494,8 @@ if (btnAddJogador) {
                 vices: 0,
                 rebaixamentos: 0
             });
-            
-            inputElement.value = ""; 
+
+            inputElement.value = "";
         } catch (erro) {
             console.error("Erro ao adicionar jogador:", erro);
         }
@@ -509,3 +549,370 @@ window.addEventListener('click', (event) => {
         modalRegras.style.display = 'none';
     }
 });
+
+// ==========================================
+// SISTEMA DE ANÚNCIOS GLOBAIS (POP-UP)
+// ==========================================
+let ultimoAnuncioVisto = Date.now(); // Ignora anúncios antigos ao carregar a página
+
+// 1. Escutando o Firestore em Tempo Real
+onSnapshot(doc(db, "sistema", "anuncio_global"), (docSnap) => {
+    if (docSnap.exists()) {
+        const dados = docSnap.data();
+
+        // Se existir um anúncio novo (com timestamp maior que o último visto)
+        if (dados.timestamp > ultimoAnuncioVisto) {
+            ultimoAnuncioVisto = dados.timestamp; // Atualiza a trava
+            exibirPopUpAnuncio(dados);
+        }
+    }
+});
+
+// 2. Função que constrói e mostra o Pop-up
+function exibirPopUpAnuncio(dados) {
+    const modal = document.getElementById('popup-anuncio');
+    const titulo = document.getElementById('popup-titulo');
+    const img = document.getElementById('popup-img');
+    const nome = document.getElementById('popup-nome');
+    const msg = document.getElementById('popup-msg');
+
+    if (!modal) return;
+
+    nome.innerText = dados.jogador;
+    msg.innerText = dados.mensagem;
+    modal.style.display = 'flex'; // Exibe o fundo escuro
+
+    if (dados.tipo === 'campeao') {
+        titulo.innerText = '🏆 TEMOS UM CAMPEÃO!';
+        titulo.style.color = '#d6aa1b';
+        img.style.display = 'none';
+
+        // Chuva de confetes!
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 200,
+                spread: 100,
+                origin: { y: 0.5 },
+                zIndex: 9999999
+            });
+        }
+
+    } else if (dados.tipo === 'vice') {
+        titulo.innerText = '🥈 VICE-CAMPEÃO';
+        titulo.style.color = '#bdc3c7';
+        img.src = dados.imgUrl;
+        img.style.display = 'block';
+
+    } else if (dados.tipo === 'rebaixado') {
+        titulo.innerText = '📉 FOI DE VASCO!';
+        titulo.style.color = '#e74c3c';
+        img.src = dados.imgUrl;
+        img.style.display = 'block';
+    }
+}
+
+// 3. Abrir o modal de criação (Somente ADM)
+const btnAbrirFormAnuncio = document.getElementById('btn-abrir-form-anuncio');
+if (btnAbrirFormAnuncio) {
+    btnAbrirFormAnuncio.addEventListener('click', () => {
+        document.getElementById('modal-criar-anuncio').style.display = 'flex';
+    });
+}
+
+// 4. Disparar Anúncio (Envia pro Firestore)
+const btnEnviarAnuncio = document.getElementById('btn-enviar-anuncio');
+if (btnEnviarAnuncio) {
+    btnEnviarAnuncio.addEventListener('click', async () => {
+        const tipo = document.getElementById('anuncio-tipo').value;
+        const jogador = document.getElementById('anuncio-nome').value;
+        const mensagem = document.getElementById('anuncio-msg').value;
+        const imgUrl = document.getElementById('anuncio-img').value;
+
+        if (!jogador || !mensagem) {
+            alert('Preencha pelo menos o nome e a mensagem!');
+            return;
+        }
+        if (tipo !== 'campeao' && !imgUrl) {
+            alert('Para Vice e Rebaixado, é obrigatório colocar o link da imagem/GIF!');
+            return;
+        }
+
+        try {
+            // Salva no Banco de Dados Firestore
+            await setDoc(doc(db, "sistema", "anuncio_global"), {
+                tipo: tipo,
+                jogador: jogador,
+                mensagem: mensagem,
+                imgUrl: imgUrl || "",
+                timestamp: Date.now()
+            });
+
+            // Limpa os campos e fecha o modal
+            document.getElementById('anuncio-nome').value = '';
+            document.getElementById('anuncio-msg').value = '';
+            document.getElementById('anuncio-img').value = '';
+            document.getElementById('modal-criar-anuncio').style.display = 'none';
+        } catch (erro) {
+            console.error("Erro ao disparar anúncio:", erro);
+        }
+    });
+}
+
+// ==========================================
+// SISTEMA DE ENQUETES (NOVO COM TEMPO E MÚLTIPLAS OPÇÕES)
+// ==========================================
+let enqueteAtualDados = null;
+let intervaloTimerEnquete = null;
+
+// 1. Escutando a Enquete em Tempo Real
+onSnapshot(doc(db, "sistema", "enquete_atual"), (docSnap) => {
+    const areaEnquete = document.getElementById('area-enquete');
+    if (!areaEnquete) return;
+
+    if (docSnap.exists() && docSnap.data().ativa) {
+        enqueteAtualDados = docSnap.data();
+        areaEnquete.style.display = 'block';
+        renderizarEnquete();
+    } else {
+        enqueteAtualDados = null;
+        areaEnquete.style.display = 'none';
+        if (intervaloTimerEnquete) clearInterval(intervaloTimerEnquete);
+    }
+});
+
+// 2. Renderizar na Tela
+function renderizarEnquete() {
+    if (!enqueteAtualDados || !enqueteAtualDados.ativa) return;
+    
+    if (intervaloTimerEnquete) clearInterval(intervaloTimerEnquete);
+
+    document.getElementById('enquete-pergunta').innerText = `📊 ${enqueteAtualDados.pergunta}`;
+    const divOpcoes = document.getElementById('enquete-opcoes');
+    divOpcoes.innerHTML = '';
+
+    const souAdmin = ehAdmin(usuarioLogado);
+    const btnEncerrar = document.getElementById('btn-encerrar-enquete');
+    if (btnEncerrar) btnEncerrar.style.display = souAdmin ? 'block' : 'none';
+
+    // Timer visual
+    const divTimer = document.createElement('div');
+    divTimer.id = 'enquete-timer';
+    divTimer.style.cssText = 'text-align: center; color: var(--yellow-accent); font-weight: bold; margin-bottom: 10px; font-size: 14px;';
+    divOpcoes.appendChild(divTimer);
+
+    const containerOpcoes = document.createElement('div');
+    divOpcoes.appendChild(containerOpcoes);
+
+    let jaVotou = usuarioLogado && enqueteAtualDados.votaram && enqueteAtualDados.votaram.includes(usuarioLogado.uid);
+    
+    let totalVotos = 0;
+    if (enqueteAtualDados.opcoes) {
+        enqueteAtualDados.opcoes.forEach(op => totalVotos += op.votos);
+    }
+
+    const renderizarOpcoes = (bloqueado = false) => {
+        containerOpcoes.innerHTML = '';
+        if (!enqueteAtualDados.opcoes) return;
+
+        enqueteAtualDados.opcoes.forEach((op, index) => {
+            if (!jaVotou && usuarioLogado && !bloqueado) {
+                const btn = document.createElement('button');
+                btn.className = 'enquete-opcao-btn';
+                btn.innerText = op.texto;
+                
+                btn.onclick = async () => {
+                    if (!usuarioLogado || !enqueteAtualDados) return;
+                    
+                    // Copiamos os arrays para atualizar localmente antes de enviar ao Firebase
+                    let novasOpcoes = [...enqueteAtualDados.opcoes];
+                    novasOpcoes[index].votos += 1;
+                    
+                    let novosVotaram = enqueteAtualDados.votaram ? [...enqueteAtualDados.votaram] : [];
+                    novosVotaram.push(usuarioLogado.uid);
+
+                    try {
+                        await updateDoc(doc(db, "sistema", "enquete_atual"), {
+                            opcoes: novasOpcoes,
+                            votaram: novosVotaram
+                        });
+                    } catch (erro) {
+                        console.error("Erro ao votar:", erro);
+                    }
+                };
+                containerOpcoes.appendChild(btn);
+            } else {
+                const pct = totalVotos === 0 ? 0 : Math.round((op.votos / totalVotos) * 100);
+                containerOpcoes.innerHTML += `
+                    <div class="enquete-barra-container">
+                        <div class="enquete-barra-progresso" style="width: ${pct}%"></div>
+                        <div class="enquete-texto-barra">
+                            <span>${op.texto}</span>
+                            <span>${pct}% (${op.votos})</span>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    };
+
+    renderizarOpcoes();
+
+    if (!usuarioLogado) {
+        divOpcoes.innerHTML += `<p style="font-size: 11px; color: var(--orange-accent); text-align:center; margin-top:5px;">Faça login para votar.</p>`;
+    }
+
+    // Lógica do Cronômetro
+    const atualizarTimer = () => {
+        if (!enqueteAtualDados || !enqueteAtualDados.terminaEm) return;
+        
+        const agora = Date.now();
+        const resto = enqueteAtualDados.terminaEm - agora;
+
+        if (resto <= 0) {
+            clearInterval(intervaloTimerEnquete);
+            divTimer.innerText = "⏳ Votação Encerrada!";
+            divTimer.style.color = 'var(--orange-accent)';
+            renderizarOpcoes(true); // Bloqueia
+
+            // Apenas o Admin dispara o encerramento oficial para não mandar 50 mensagens no chat
+            if (souAdmin) {
+                encerrarEnqueteOficial();
+            }
+        } else {
+            const min = Math.floor(resto / 60000);
+            const sec = Math.floor((resto % 60000) / 1000);
+            divTimer.innerText = `⏳ Restam: ${min}:${sec.toString().padStart(2, '0')}`;
+        }
+    };
+    
+    atualizarTimer();
+    intervaloTimerEnquete = setInterval(atualizarTimer, 1000);
+}
+
+// 3. Função que encerra e manda o resultado pro Chat
+async function encerrarEnqueteOficial() {
+    if (!enqueteAtualDados || !enqueteAtualDados.ativa) return;
+    
+    let opcoes = enqueteAtualDados.opcoes || [];
+    if (opcoes.length === 0) return;
+
+    let vencedor = opcoes[0];
+    let total = 0;
+    let empate = false;
+    
+    opcoes.forEach(op => total += op.votos);
+
+    // Calcula quem venceu
+    for (let i = 1; i < opcoes.length; i++) {
+        if (opcoes[i].votos > vencedor.votos) {
+            vencedor = opcoes[i];
+            empate = false;
+        } else if (opcoes[i].votos === vencedor.votos && vencedor.votos > 0) {
+            empate = true;
+        }
+    }
+
+    let tituloVencedor = empate ? "Empate!" : `${vencedor.texto} venceu!`;
+    let mensagemResultado = `📊 VOTAÇÃO ENCERRADA: ${enqueteAtualDados.pergunta}\n🏆 ${tituloVencedor} (Total: ${total} votos)\n`;
+    
+    opcoes.forEach(op => {
+        mensagemResultado += `👉 ${op.texto}: ${op.votos} votos\n`;
+    });
+
+    try {
+        await updateDoc(doc(db, "sistema", "enquete_atual"), { ativa: false });
+        await addDoc(collection(db, "mensagens"), {
+            texto: mensagemResultado.trim(),
+            autor: "SISTEMA",
+            foto: "https://ui-avatars.com/api/?name=S&background=c75432&color=fff",
+            data_hora: serverTimestamp()
+        });
+    } catch (erro) {
+        console.error("Erro ao encerrar enquete:", erro);
+    }
+}
+
+// 4. ADMIN: Adicionar mais opções no formulário
+const btnAddOpcao = document.getElementById('btn-add-opcao-enquete');
+if (btnAddOpcao) {
+    btnAddOpcao.addEventListener('click', () => {
+        const container = document.getElementById('container-opcoes-enquete');
+        if (!container) return;
+        const qtd = container.querySelectorAll('.input-opcao-enquete').length + 1;
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'input-opcao-enquete';
+        input.placeholder = `Opção ${qtd}`;
+        input.style.cssText = "width: 100%; padding: 10px; margin-bottom: 5px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px;";
+        
+        container.appendChild(input);
+        container.scrollTop = container.scrollHeight;
+    });
+}
+
+// 5. ADMIN: Abrir Modal
+const btnAbrirFormEnquete = document.getElementById('btn-abrir-form-enquete');
+if (btnAbrirFormEnquete) {
+    btnAbrirFormEnquete.addEventListener('click', () => {
+        document.getElementById('modal-criar-enquete').style.display = 'flex';
+    });
+}
+
+// 6. ADMIN: Disparar Enquete
+const btnDispararEnquete = document.getElementById('btn-disparar-enquete');
+if (btnDispararEnquete) {
+    btnDispararEnquete.addEventListener('click', async () => {
+        const pergunta = document.getElementById('nova-enquete-pergunta').value.trim();
+        const tempoInput = document.getElementById('nova-enquete-tempo');
+        const tempoMinutos = tempoInput ? parseInt(tempoInput.value) || 5 : 5;
+        
+        const inputsOpcoes = document.querySelectorAll('.input-opcao-enquete');
+        let opcoes = [];
+        
+        inputsOpcoes.forEach((input) => {
+            if (input.value.trim() !== "") {
+                opcoes.push({ texto: input.value.trim(), votos: 0 });
+            }
+        });
+
+        if (!pergunta || opcoes.length < 2) {
+            alert('Preencha a pergunta e no mínimo duas opções válidas!');
+            return;
+        }
+
+        const tempoEmMilissegundos = tempoMinutos * 60 * 1000;
+        const dataFim = Date.now() + tempoEmMilissegundos;
+
+        try {
+            await setDoc(doc(db, "sistema", "enquete_atual"), {
+                pergunta: pergunta,
+                ativa: true,
+                votaram: [],
+                opcoes: opcoes,
+                terminaEm: dataFim
+            });
+            
+            document.getElementById('nova-enquete-pergunta').value = '';
+            const container = document.getElementById('container-opcoes-enquete');
+            if (container) {
+                container.innerHTML = `
+                    <input type="text" class="input-opcao-enquete" placeholder="Opção 1" style="width: 100%; padding: 10px; margin-bottom: 5px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px;">
+                    <input type="text" class="input-opcao-enquete" placeholder="Opção 2" style="width: 100%; padding: 10px; margin-bottom: 5px; background: #111; color: #fff; border: 1px solid var(--text-muted); border-radius: 5px;">
+                `;
+            }
+            document.getElementById('modal-criar-enquete').style.display = 'none';
+        } catch (erro) {
+            alert("Erro ao criar a enquete: " + erro.message);
+        }
+    });
+}
+
+// 7. ADMIN: Encerrar Manualmente 
+const btnEncerrarEnquete = document.getElementById('btn-encerrar-enquete');
+if (btnEncerrarEnquete) {
+    btnEncerrarEnquete.addEventListener('click', () => {
+        if (!confirm("Encerrar votação antecipadamente e mandar resultado no chat?")) return;
+        encerrarEnqueteOficial();
+    });
+}
