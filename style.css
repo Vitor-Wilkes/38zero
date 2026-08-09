@@ -10,8 +10,6 @@
     --green-btn: #3b8555;
     --yellow-accent: #d6aa1b;
     --orange-accent: #c75432;
-    --blue-accent: #2980b9;
-    --cyan-accent: #00e5ff;
     --font-text: 'Courier Prime', 'Courier New', monospace;
     --font-header: 'Oswald', Impact, sans-serif;
 }
@@ -25,7 +23,7 @@
 }
 
 /* ==========================================
-   ESTRUTURA BASE
+   CORREÇÃO DA ESTRUTURA (Evita cortar a tela)
    ========================================== */
 body {
     background-color: var(--bg-color);
@@ -34,8 +32,8 @@ body {
     background-size: 10px 10px;
     height: 100vh; 
     overflow: hidden; 
-    display: flex;          
-    flex-direction: column; 
+    display: flex;           /* NOVO: Organiza a tela inteira */
+    flex-direction: column;  /* NOVO: De cima para baixo */
 }
 
 /* Títulos Fortes */
@@ -47,16 +45,16 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================
-   CONTAINER
+   CONTAINER (Ocupa o que sobra abaixo do header)
    ========================================== */
 .container {
     display: flex;
-    flex: 1;                
-    overflow: hidden;        
+    flex: 1;                 /* NOVO: Pega o resto da tela */
+    overflow: hidden;        /* NOVO: Trava os elementos aqui dentro */
 }
 
 /* ==========================================
-   CHAT - PAINEL ESQUERDO
+   CHAT - PAINEL ESQUERDO (40%)
    ========================================== */
 .painel-esquerdo {
     width: 40%;
@@ -81,8 +79,9 @@ h1, h2, h3, h4, h5 {
     padding: 20px;
     overflow-y: auto; 
     background-color: transparent;
-    min-height: 0;
+    min-height: 0; /* NOVO: Essencial para não empurrar a caixa de texto */
     
+    /* Scrollbar */
     scrollbar-width: thin; 
     scrollbar-color: var(--yellow-accent) var(--bg-color);
 }
@@ -91,9 +90,10 @@ h1, h2, h3, h4, h5 {
 .area-mensagens::-webkit-scrollbar-track { background: var(--bg-color); }
 .area-mensagens::-webkit-scrollbar-thumb { background-color: var(--yellow-accent); border-radius: 10px; }
 
+/* Correção: Força as mensagens a ficarem escuras */
 .area-mensagens > div {
     background-color: var(--box-bg) !important;
-    border-left: 3px solid var(--blue-accent) !important;
+    border-left: 3px solid var(--yellow-accent) !important;
     border-radius: 0 4px 4px 0 !important;
     padding: 12px !important;
     margin-bottom: 10px !important;
@@ -101,20 +101,15 @@ h1, h2, h3, h4, h5 {
     border-top: 1px solid #333 !important;
     border-right: 1px solid #333 !important;
     border-bottom: 1px solid #333 !important;
-    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.area-mensagens > div:hover {
-    transform: translateX(5px);
-    box-shadow: -2px 2px 8px rgba(41, 128, 185, 0.3);
-}
-
+/* Caixa de Digitar - Fixa no fundo */
 .area-digitar {
     display: flex;
     padding: 15px;
     background-color: var(--box-bg);
     border-top: 2px dashed var(--text-muted);
-    flex-shrink: 0;
+    flex-shrink: 0; /* NOVO: Impede essa caixa de ser esmagada sumir */
 }
 
 .area-digitar input {
@@ -124,13 +119,11 @@ h1, h2, h3, h4, h5 {
     color: var(--text-main);
     border: 1px solid var(--text-muted);
     border-radius: 4px;
-    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .area-digitar input:focus {
     outline: none;
-    border-color: var(--cyan-accent) !important;
-    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+    border-color: var(--yellow-accent);
 }
 
 .area-digitar button {
@@ -139,7 +132,7 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ==========================================
-   TABELAS - PAINEL DIREITO
+   TABELAS - PAINEL DIREITO (60%)
    ========================================== */
 .painel-direito {
     width: 60%;
@@ -164,18 +157,13 @@ h1, h2, h3, h4, h5 {
     font-family: var(--font-header);
     text-transform: uppercase;
     border-radius: 4px 4px 0 0;
-    transition: all 0.3s ease !important;
-}
-
-.aba:hover {
-    color: var(--cyan-accent) !important;
 }
 
 .aba.ativa {
-    color: var(--cyan-accent) !important;
-    border-color: var(--cyan-accent) !important;
-    border-bottom-color: var(--bg-color) !important;
-    text-shadow: 0 0 5px rgba(0, 229, 255, 0.4);
+    background-color: var(--bg-color);
+    color: var(--yellow-accent);
+    border: 2px solid var(--yellow-accent);
+    border-bottom: 2px solid var(--bg-color);
 }
 
 #form-add-jogador {
@@ -185,25 +173,48 @@ h1, h2, h3, h4, h5 {
     margin-bottom: 15px;
 }
 
+/* ==========================================
+   CORREÇÃO: LIMITANDO O TAMANHO DA TABELA
+   ========================================== */
 .conteudo-tabela {
-    border: 2px solid var(--blue-accent) !important;
+    border: 2px solid var(--orange-accent);
     background-color: var(--box-bg);
     padding: 20px;
     border-radius: 4px;
+    
+    /* Trava a altura máxima e cria rolagem interna */
     max-height: calc(100vh - 250px); 
     overflow-y: auto;
-    box-shadow: 0 0 15px rgba(41, 128, 185, 0.1);
-    transition: border-color 0.4s;
+    
+    /* Scrollbar estilizada para a tabela */
+    scrollbar-width: thin; 
+    scrollbar-color: var(--orange-accent) var(--box-bg);
 }
 
-.conteudo-tabela:hover {
-    border-color: var(--cyan-accent) !important;
+/* Barra de rolagem para navegadores baseados no Chrome/Edge */
+.conteudo-tabela::-webkit-scrollbar { 
+    width: 6px; 
+}
+.conteudo-tabela::-webkit-scrollbar-track { 
+    background: transparent; 
+}
+.conteudo-tabela::-webkit-scrollbar-thumb { 
+    background-color: var(--orange-accent); 
+    border-radius: 10px; 
 }
 
-.conteudo-tabela::-webkit-scrollbar { width: 6px; }
-.conteudo-tabela::-webkit-scrollbar-track { background: transparent; }
-.conteudo-tabela::-webkit-scrollbar-thumb { background-color: var(--orange-accent); border-radius: 10px; }
-
+/* Faz o cabeçalho da tabela ficar fixo no topo ao rolar */
+th {
+    font-family: var(--font-header);
+    border-bottom: 2px dashed var(--text-muted);
+    color: var(--yellow-accent);
+    padding: 12px;
+    text-align: left;
+    position: sticky;
+    top: -20px; /* Ajuste por causa do padding da div */
+    background-color: var(--box-bg); /* Fundo sólido para não misturar com os nomes */
+    z-index: 10;
+}
 table {
     width: 100%;
     border-collapse: collapse;
@@ -216,10 +227,6 @@ th {
     color: var(--yellow-accent);
     padding: 12px;
     text-align: left;
-    position: sticky;
-    top: -20px;
-    background-color: var(--box-bg);
-    z-index: 10;
 }
 
 td {
@@ -228,31 +235,9 @@ td {
     color: var(--text-main);
 }
 
-tbody tr {
-    transition: background-color 0.2s;
-}
-
-tbody tr:hover td {
-    background-color: rgba(41, 128, 185, 0.1) !important;
-}
-
 /* ==========================================
-   BOTÕES GERAIS E ANIMAÇÕES
+   BOTÕES GERAIS E AÇÕES
    ========================================== */
-@keyframes slideUpFade {
-    0% { opacity: 0; transform: translateY(15px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes popIn {
-    0% { opacity: 0; transform: scale(0.95); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-.mensagem-nova {
-    animation: slideUpFade 0.4s ease-out forwards;
-}
-
 button {
     background-color: var(--green-btn);
     color: white;
@@ -261,14 +246,16 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s ease !important;
+    transition: 0.2s;
 }
 
 button:hover { 
-    background-color: var(--blue-accent) !important;
-    box-shadow: 0 0 12px rgba(0, 229, 255, 0.5) !important;
-    border-color: var(--cyan-accent) !important;
-    transform: translateY(-2px) !important;
+    background-color: #2e6a43; 
+    transform: translateY(-2px); 
+}
+
+button:active { 
+    transform: translateY(0); 
 }
 
 td button {
@@ -279,16 +266,14 @@ td button {
     padding: 4px 8px;
     margin-right: 4px;
 }
-
 td button:hover {
-    background-color: var(--cyan-accent) !important;
-    color: var(--bg-color) !important;
-    border-color: var(--cyan-accent) !important;
-    box-shadow: 0 0 8px rgba(0, 229, 255, 0.6) !important;
+    background-color: var(--yellow-accent);
+    color: var(--bg-color);
+    border-color: var(--yellow-accent);
 }
 
 /* ==========================================
-   MODAIS (LOGIN E REGRAS)
+   MODAIS (LOGIN E REGRAS) NO TEMA ESCURO
    ========================================== */
 .modal-overlay {
     position: fixed; 
@@ -299,7 +284,6 @@ td button:hover {
     align-items: center; 
     justify-content: center;
     z-index: 9999;
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .modal-card, #modal-regras > div {
@@ -310,7 +294,7 @@ td button:hover {
     width: 90%;
     max-width: 400px;
     color: var(--text-main);
-    text-align: center;
+    text-align: center; /* Centraliza o texto do modal */
 }
 
 .modal-card p { margin-bottom: 15px; color: var(--text-muted); }
@@ -322,8 +306,11 @@ td button:hover {
     margin-bottom: 20px;
 }
 
+/* ------------------------------------------
+   CORREÇÃO: Botão do Google e Logo
+   ------------------------------------------ */
 .btn-google {
-    background-color: #fff !important;
+    background-color: #fff !important; /* Fundo branco pra destacar a logo colorida */
     color: #333 !important;
     display: flex !important;
     align-items: center !important;
@@ -335,11 +322,15 @@ td button:hover {
     border: 2px solid var(--text-muted) !important;
 }
 
+/* Trava o tamanho da imagem do Google */
 .btn-google img {
     width: 24px !important;
     height: 24px !important;
 }
 
+/* ------------------------------------------
+   CORREÇÃO: Divisor "ou use seu usuário"
+   ------------------------------------------ */
 .divisor {
     margin: 20px 0;
     position: relative;
@@ -347,7 +338,7 @@ td button:hover {
 }
 
 .divisor span {
-    background-color: var(--bg-color);
+    background-color: var(--bg-color); /* Mesma cor do fundo do modal pra "cortar" a linha */
     padding: 0 10px;
     color: var(--text-muted);
     font-size: 14px;
@@ -365,6 +356,9 @@ td button:hover {
     z-index: 0;
 }
 
+/* ------------------------------------------
+   Formulário Tradicional
+   ------------------------------------------ */
 #form-auth input {
     width: 100%;
     padding: 10px;
@@ -383,7 +377,6 @@ td button:hover {
 .btn-secondary { 
     flex: 1; padding: 10px; background: transparent; color: var(--text-main); border: 2px solid var(--text-muted); 
 }
-
 .btn-secondary:hover { 
     border-color: var(--yellow-accent); 
 }
@@ -391,17 +384,127 @@ td button:hover {
 .mensagem-erro { color: #e74c3c; font-size: 12px; margin-top: 10px; }
 
 /* ==========================================
-   CORREÇÃO EXCLUSIVA PARA CELULAR (RESPONSIVO & ROLAGEM)
+   NOVA PALETA E EFEITOS (AZUL, CIANO E NEON)
+   ========================================== */
+:root {
+    /* Adicionando as novas cores à sua paleta */
+    --blue-accent: #2980b9;
+    --cyan-accent: #00e5ff;
+}
+
+/* ==========================================
+   ANIMAÇÕES (KEYFRAMES)
+   ========================================== */
+/* Deslizamento suave de baixo para cima (para mensagens) */
+@keyframes slideUpFade {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Efeito de "pulo" suave (para modais) */
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* ==========================================
+   APLICANDO ANIMAÇÕES E NOVAS CORES
+   ========================================== */
+
+/* 1. Modais mais suaves */
+.modal-overlay {
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 2. Mensagens do chat aparecendo com estilo */
+/* Mensagens do chat (SEM animação global) */
+.area-mensagens > div {
+    border-left: 3px solid var(--blue-accent) !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Animação exclusiva que será chamada via JS */
+.mensagem-nova {
+    animation: slideUpFade 0.4s ease-out forwards;
+}
+
+/* Efeito ao passar o mouse nas mensagens */
+.area-mensagens > div:hover {
+    transform: translateX(5px);
+    box-shadow: -2px 2px 8px rgba(41, 128, 185, 0.3);
+}
+
+/* 3. Botões mais dinâmicos (Glow effect) */
+button {
+    transition: all 0.3s ease !important;
+}
+
+button:hover {
+    background-color: var(--blue-accent) !important;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.5) !important; /* Brilho Ciano */
+    border-color: var(--cyan-accent) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Botões da Tabela (+1, -1, Excluir) */
+td button:hover {
+    background-color: var(--cyan-accent) !important;
+    color: var(--bg-color) !important;
+    border-color: var(--cyan-accent) !important;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.6) !important;
+}
+
+/* 4. Caixa de digitar com foco em Ciano */
+.area-digitar input {
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.area-digitar input:focus {
+    border-color: var(--cyan-accent) !important;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.3) !important;
+}
+
+/* 5. Abas (Tabs) modernizadas */
+.aba {
+    transition: all 0.3s ease !important;
+}
+
+.aba:hover {
+    color: var(--cyan-accent) !important;
+}
+
+.aba.ativa {
+    color: var(--cyan-accent) !important;
+    border-color: var(--cyan-accent) !important;
+    border-bottom-color: var(--bg-color) !important;
+    text-shadow: 0 0 5px rgba(0, 229, 255, 0.4);
+}
+
+/* 6. Tabela com hover nas linhas */
+.conteudo-tabela {
+    border-color: var(--blue-accent) !important;
+    box-shadow: 0 0 15px rgba(41, 128, 185, 0.1);
+    transition: border-color 0.4s;
+}
+
+.conteudo-tabela:hover {
+    border-color: var(--cyan-accent) !important;
+}
+
+tbody tr {
+    transition: background-color 0.2s;
+}
+
+tbody tr:hover td {
+    background-color: rgba(41, 128, 185, 0.1) !important; /* Fundo levemente azul ao passar o mouse */
+}
+
+/* ==========================================
+   AJUSTES PARA CELULAR (RESPONSIVIDADE)
    ========================================== */
 @media (max-width: 768px) {
     
-    /* Liberando a barra de rolagem geral da tela do celular */
-    html, body {
-        height: auto !important;
-        min-height: 100vh !important;
-        overflow-y: auto !important;
-    }
-
+    /* 1. Cabeçalho centralizado */
     header {
         flex-direction: column !important;
         gap: 10px;
@@ -413,29 +516,21 @@ td button:hover {
         font-size: 20px;
     }
 
-    /* Container empilhado (Vertical) */
+    /* 2. Container principal: empilha Chat e Tabela na vertical */
     .container {
         flex-direction: column !important;
         padding: 10px !important;
         gap: 20px !important;
-        height: auto !important;
-        overflow: visible !important;
     }
 
     .painel-esquerdo, 
     .painel-direito {
         width: 100% !important;
-        height: auto !important;
     }
 
-    /* Chat ajustado com rolagem destravada */
+    /* 3. Ajuste do Chat */
     .area-mensagens {
-        height: 250px !important;
-        max-height: 250px !important;
-        overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch;
-        touch-action: pan-y;
-        overscroll-behavior: contain;
+        height: 320px !important; /* Altura confortável para ler no celular */
     }
 
     .area-digitar {
@@ -449,10 +544,9 @@ td button:hover {
         box-sizing: border-box;
     }
 
-    /* Tabela adaptada para o dedo no mobile */
+    /* 4. Ajuste das Tabelas (evita estourar a tela pro lado) */
     .conteudo-tabela {
-        overflow-x: auto;
-        max-height: none !important;
+        overflow-x: auto; /* Se a tabela for larga, ela ganha rolagem suave horizontal */
     }
 
     table {
@@ -463,12 +557,14 @@ td button:hover {
         padding: 8px 5px !important;
     }
 
+    /* Botões de Ação do Admin pequenos e organizados */
     td button {
         padding: 5px 6px !important;
         font-size: 11px !important;
         margin: 2px !important;
     }
 
+    /* Form de adicionar jogador no celular */
     #form-add-jogador {
         flex-direction: column;
     }
@@ -478,17 +574,80 @@ td button:hover {
         width: 100% !important;
     }
 
-    /* Modais contidos na tela do celular */
+    /* 5. Modais (Login e Regras) cabendo em qualquer tela */
     .modal-card,
     #modal-regras > div {
         width: 90% !important;
         max-width: 90% !important;
         padding: 20px 15px !important;
         max-height: 85vh;
-        overflow-y: auto;
+        overflow-y: auto; /* Rolagem caso o celular seja muito pequeno */
     }
 
+    /* A nossa Pantera ajustada para o celular */
     #modal-regras img {
-        width: 110px !important;
+        width: 110px !important; /* Ajuste suave para não ocupar a tela toda do celular */
     }
+}
+
+/* ==========================================
+   SISTEMA DE ENQUETES (VOTAÇÃO NO CHAT)
+   ========================================== */
+.votacao-fixada {
+    background-color: var(--box-bg);
+    border-bottom: 2px solid var(--blue-accent);
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    flex-shrink: 0;
+}
+
+.enquete-opcao-btn {
+    width: 100%;
+    background: #111;
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 4px;
+    transition: 0.2s;
+    font-family: var(--font-header);
+    letter-spacing: 1px;
+}
+
+.enquete-opcao-btn:hover { 
+    border-color: var(--cyan-accent); 
+    background: rgba(0, 229, 255, 0.1); 
+}
+
+.enquete-barra-container {
+    background: #111;
+    border-radius: 4px;
+    margin: 8px 0;
+    position: relative;
+    height: 35px;
+    border: 1px solid var(--text-muted);
+    overflow: hidden;
+}
+
+.enquete-barra-progresso {
+    background: rgba(41, 128, 185, 0.5);
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease-out;
+}
+
+.enquete-texto-barra {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    pointer-events: none;
 }
