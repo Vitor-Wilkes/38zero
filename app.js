@@ -283,7 +283,8 @@ const ADMINS = [
     "vitorwilkes99@gmail.com",
     "kaua.pragidi@edu.senai.br",
     "kaua.pragidi@meucampeonato.com",
-    "kaua"
+    "kaua",
+    "Time_do_povo"
 ];
 
 function ehAdmin(user) {
