@@ -281,6 +281,8 @@ const ADMINS = [
     "Wilkes",
     "Wilkes@meucampeonato.com",
     "vitorwilkes99@gmail.com",
+    "kaua.pragidi@edu.senai.br",
+    "kaua.pragidi@meucampeonato.com",
     "kaua"
 ];
 
