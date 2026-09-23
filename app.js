@@ -280,7 +280,8 @@ onSnapshot(consultaChat, (snapshot) => {
 const ADMINS = [
     "Wilkes",
     "Wilkes@meucampeonato.com",
-    "vitorwilkes99@gmail.com"
+    "vitorwilkes99@gmail.com",
+    "kaua"
 ];
 
 function ehAdmin(user) {
